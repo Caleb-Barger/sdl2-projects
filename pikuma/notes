@@ -1,0 +1,67 @@
+colorbuffer
+	- 0x <--- c says this is a hex number	
+		a. 0xFFFF0000 (ARGB FORMAT)
+			- this color would be red	
+			  FFFF ( full opacity, full red )
+
+		b. to encode this number in memory we need
+		   a total of 32 bits.
+
+		c. the sizeof function returns size of any
+		   type in bytes.
+			- the tricky thing here is that this 
+			  number can vary depending on the 
+			  machine. 
+			- what can we do about this?
+
+	- enter fixed sized types
+		a. i.e uint8_t, uint16_t, uint32_t are allways
+		   the same size.
+
+	- mem managment 
+		a. malloc color-buffer ex. 
+			- (caster) malloc(sizeof(type) * w * h)
+
+		b. when freeing resources a good tip is to do
+		   things in reverse order of creation.
+textures
+	- the colorbuffer is what we want to display
+
+	- the texture is going to act as out middleman
+		a. the texutre will in turn be displayed via a 
+		   renderer	
+
+		b. texture pitch ( size of each row ) 	
+
+vectors
+    - magnitute (length) and direction 
+
+    - two types of qunataties
+        a. scalar
+            - i.e. tempature, area, length, pressure
+
+        b. vectors
+            - scaling, translation, and rotation
+                a. these are three important elements of 
+                   vector manipulation
+
+                b. rotations 
+                    - lookup angle addition formula
+
+
+prespective projection
+    - prespective divide mathmaticly is  
+        a. p'x = px/pz & p'y = py/pz 
+
+    - cordinate system handeness
+        a. we are using a left handed cordinate system 
+
+trigonmetry review ( basics ) 
+    - three parts: oposite, adjacent, hypotonuse
+
+    - sin cos and tan are just ratios of these sides 
+        a. sin(a) = opp/hyp
+
+        b. cos(a) = adj/hyp
+
+        c. tan(a) = opp/adj
