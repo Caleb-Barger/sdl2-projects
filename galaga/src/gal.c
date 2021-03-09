@@ -4,7 +4,7 @@
 #include "vec.h"
 
 #define STAR_COUNT 300
-#define MAX_BULLETS 100
+#define MAX_BULLETS 30 
 
 SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
@@ -12,30 +12,58 @@ uint32_t* color_buffer = NULL;
 SDL_Texture* color_buffer_texture = NULL;
 
 vec2_t stars[STAR_COUNT];
-SDL_Rect bullets[MAX_BULLETS];
+vec2_t bullets[MAX_BULLETS];
 int bullet_counter = 0;
 
 SDL_Texture* ship_texture = NULL;
-SDL_Rect ship_r; 
-float ship_speed = 5.0f;
+SDL_Rect ship_r = {0, 0, 0, 0}; 
 
 int window_width = 800;
 int window_height = 600;
+
 float world_speed = 0.1f;
+double bullet_speed = 5.0;
+float ship_speed = 5.0f;
 
 int is_running = 0;
 
-void draw_stars(void) {
-
-	for (int i=0; i < STAR_COUNT; i++) {
+void update_stars(void) {
+for (int i=0; i < STAR_COUNT; i++) {
 		stars[i].y += world_speed;
-
 		if (stars[i].y > window_height)  {
 			stars[i].y = 0;
 			stars[i].x = rand() % window_width;
 		}
-			
+	}
+}
+
+void draw_stars(void) {
+	for (int i=0; i < STAR_COUNT; i++) {
 		draw_pixel(stars[i].x, stars[i].y, 0xFFFFFFFF);
+	}
+}
+
+void fire(void) {
+	bullets[bullet_counter].x = ship_r.x;
+        bullets[bullet_counter].y = ship_r.y-5;	
+	bullet_counter++;
+}
+
+void update_bullets(void) {
+	/* move the bullets */
+	for (int i=0; i <= bullet_counter; i++) {
+		bullets[i].y -= bullet_speed; 
+		printf("Bullet pos: (%d, %d)\n", bullets[i].x, bullets[i].y);
+		//if (bullets[i].y < 0) bullet_counter--;
+	}
+}
+
+void draw_bullets(void) {
+	/* draw the bullets */
+	for (int i=0; i <= bullet_counter; i++) {
+		draw_pixel(bullets[i].x, bullets[i].y, 0xFFFFFFFF);
+		draw_pixel(bullets[i].x, bullets[i].y+1, 0xFFFFFFFF);
+		draw_pixel(bullets[i].x, bullets[i].y+2, 0xFFFFFFFF);
 	}
 }
 
@@ -46,6 +74,9 @@ void render(void) {
 
 	/* draw stars to color buffer */
 	draw_stars();
+
+	/* draw the bullets */
+	draw_bullets();
 	
 	/* display the color buff */
 	render_color_buffer();
@@ -57,6 +88,7 @@ void render(void) {
 		NULL,
 		&ship_r
 	);
+
 
 	/* dispay the color_buffer_texture */
 	SDL_RenderPresent(renderer);
@@ -77,14 +109,17 @@ void process_input(void) {
 				ship_r.x -= ship_speed; //* time_since_last_frame;
 			if (e.key.keysym.sym == SDLK_RIGHT)
 				ship_r.x += ship_speed; //* time_since_last_frame;
-
+			if (e.key.keysym.sym == SDLK_SPACE) {
+				fire();
+				printf("Bullet count: %d\n", bullet_counter);
+			}
 			break;
 	}
 }
 
 void update(void) {
-	draw_stars();
-
+	update_stars();
+	update_bullets();
 }
 
 int setup(void) {
