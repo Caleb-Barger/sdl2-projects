@@ -3,6 +3,7 @@
 
 #include <SDL2/SDL.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 extern SDL_Window* window;
 extern SDL_Renderer* renderer;
@@ -12,8 +13,8 @@ extern int window_width;
 extern int window_height;
 
 void clear_color_buffer(uint32_t color);
+void draw_pixel(int x, int y, uint32_t color);
 void render_color_buffer(void);
-int setup(void);
 void cleanup(void);
 
 #endif

@@ -1,6 +1,6 @@
 OBJS=*.c
 CC=gcc
-LIBS=-lSDL2
+LIBS=-lSDL2 
 EXECDIR=bin
 SRCDIR=src
 FLAGS=-Wall -std=c99
