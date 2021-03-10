@@ -12,7 +12,13 @@ uint32_t* color_buffer = NULL;
 SDL_Texture* color_buffer_texture = NULL;
 
 vec2_t stars[STAR_COUNT];
-vec2_t bullets[MAX_BULLETS];
+
+/* bullet implementation 
+   allocate memory equal to max amount of bullets
+   SDL_Point* bullets = (SDL_Point*) malloc(sizeof(SDL_Point)*max_bullets);
+ 
+  */
+SDL_Point bullets[MAX_BULLETS];
 int bullet_counter = 0;
 
 SDL_Texture* ship_texture = NULL;
@@ -21,14 +27,14 @@ SDL_Rect ship_r = {0, 0, 0, 0};
 int window_width = 800;
 int window_height = 600;
 
-float world_speed = 0.1f;
-double bullet_speed = 5.0;
-float ship_speed = 5.0f;
+double world_speed = 0.1;
+double bullet_speed = 1.0;
+double ship_speed = 7.0;
 
 int is_running = 0;
 
 void update_stars(void) {
-for (int i=0; i < STAR_COUNT; i++) {
+	for (int i=0; i < STAR_COUNT; i++) {
 		stars[i].y += world_speed;
 		if (stars[i].y > window_height)  {
 			stars[i].y = 0;
@@ -44,7 +50,7 @@ void draw_stars(void) {
 }
 
 void fire(void) {
-	bullets[bullet_counter].x = ship_r.x;
+	bullets[bullet_counter].x = ship_r.x+18;
         bullets[bullet_counter].y = ship_r.y-5;	
 	bullet_counter++;
 }
@@ -53,8 +59,9 @@ void update_bullets(void) {
 	/* move the bullets */
 	for (int i=0; i <= bullet_counter; i++) {
 		bullets[i].y -= bullet_speed; 
-		printf("Bullet pos: (%d, %d)\n", bullets[i].x, bullets[i].y);
-		//if (bullets[i].y < 0) bullet_counter--;
+		if (bullets[i].y < 0) {
+			bullet_counter--;
+		}
 	}
 }
 
@@ -111,7 +118,6 @@ void process_input(void) {
 				ship_r.x += ship_speed; //* time_since_last_frame;
 			if (e.key.keysym.sym == SDLK_SPACE) {
 				fire();
-				printf("Bullet count: %d\n", bullet_counter);
 			}
 			break;
 	}
