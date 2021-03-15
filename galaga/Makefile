@@ -13,4 +13,4 @@ run: all
 	./$(EXECDIR)/$(EXEC)
 
 clean: 
-	rm ./$(EXECDIR)/$(EXEC)
+	rm -rf ./$(EXECDIR)/$(EXEC)
