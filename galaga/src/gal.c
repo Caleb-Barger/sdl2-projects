@@ -1,14 +1,17 @@
 /* galaga clone by caleb barger written with SDL2 03/08/21 */
 
 #define SHIP_SPEED 10
+#define ENEMY_SPEED 1
 #define BULLET_SPEED 3
 #define BULLET_LIMBO -31
+#define ENEMY_LIMBO -199
 
 #include "display.h"
 #include "imgldr.h"
 
 int is_running = 0;
 int can_fire = 0;
+int enemy_dir = 0;
 uint32_t delta = 0;
 uint32_t time_passed = 0;
 
@@ -76,6 +79,24 @@ void debug_info(void) {
 		//printf("Player pos: (%d, %d)\n", player_r.x, player_r.y);
 		//printf("Bullet pos: (%d, %d)\n", bullet.x, bullet.y);
 		printf("Enemy pos: (%d, %d)\n", enemy_r.x, enemy_r.y);
+		printf("Enemy state: %d\n", enemy_dir);
+	}
+}
+
+void update_enemy() {
+	if (SDL_PointInRect(&bullet, &enemy_r)) enemy_r.x = ENEMY_LIMBO;
+	if (enemy_r.x + ENEMY_SPEED + enemy_r.w > window_width) 
+		enemy_dir = !enemy_dir;
+	else if (enemy_r.x - ENEMY_SPEED - enemy_r.w < 0)
+		enemy_dir = !enemy_dir;
+	if ((SDL_GetTicks() % 3) == 0) {
+		switch (enemy_dir) {
+			case 0:
+				enemy_r.x += ENEMY_SPEED;
+				break;
+			case 1:
+				enemy_r.x -= ENEMY_SPEED;
+		}
 	}
 }
 
@@ -84,8 +105,8 @@ void update(void) {
 	time_passed = SDL_GetTicks();
 	update_stars();
 	update_bullet();
+	update_enemy();
 	debug_info();
-
 }
 
 int setup(void) {
