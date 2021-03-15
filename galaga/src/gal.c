@@ -12,18 +12,15 @@ int can_fire = 0;
 uint32_t delta = 0;
 uint32_t time_passed = 0;
 
-SDL_Point bullet = { 0, 0 };
+SDL_Point bullet = {0, 0};
 
 void update_bullet(void) {
-	// if the bullet is on the screen than update it
 	if (bullet.y < window_height && bullet.y > 0)
 		bullet.y -= BULLET_SPEED;
-	// otherwise dont...
 	else { 
-		bullet.y = BULLET_LIMBO; //TODO fix this shit 
+		bullet.y = BULLET_LIMBO;
 		can_fire = 1;
 	}
-		
 }
 
 void draw_bullet(void) {
@@ -31,8 +28,8 @@ void draw_bullet(void) {
 	bullet.x, 
 	bullet.y,
 	bullet.x,
-	bullet.y-10,
-	0xFFFFFFFF);
+	bullet.y-(player_r.h/2),
+ 	0xFFFFFFFF);
 }
 
 void fire(void) {
@@ -47,6 +44,7 @@ void render(void) {
 	draw_bullet();
 	render_color_buffer(); 
 	draw_player(); 
+	draw_enemy();
 	SDL_RenderPresent(renderer); 
 }
 
@@ -58,7 +56,7 @@ void process_input(void) {
 		case SDL_QUIT:
 			is_running = 0;
 			break;
-		case SDL_KEYDOWN:
+		case SDL_KEYUP:
 			if (e.key.keysym.sym == SDLK_ESCAPE)
 				is_running = 0;
 			if (e.key.keysym.sym == SDLK_RIGHT)
@@ -75,8 +73,9 @@ void process_input(void) {
 void debug_info(void) {
 	if (time_passed % 500 == 0) {
 		printf("\n====================\n");	
-		printf("Player pos: (%d, %d)\n", player_r.x, player_r.y);
-		printf("Bullet pos: (%d, %d)\n", bullet.x, bullet.y);
+		//printf("Player pos: (%d, %d)\n", player_r.x, player_r.y);
+		//printf("Bullet pos: (%d, %d)\n", bullet.x, bullet.y);
+		printf("Enemy pos: (%d, %d)\n", enemy_r.x, enemy_r.y);
 	}
 }
 
@@ -85,7 +84,7 @@ void update(void) {
 	time_passed = SDL_GetTicks();
 	update_stars();
 	update_bullet();
-//	debug_info();
+	debug_info();
 
 }
 
@@ -129,6 +128,11 @@ int setup(void) {
 	);
 	
 	if (!init_player()) {
+		printf("%s\n", SDL_GetError());
+		return 0;
+	}
+
+	if (!init_enemy()) {
 		printf("%s\n", SDL_GetError());
 		return 0;
 	}

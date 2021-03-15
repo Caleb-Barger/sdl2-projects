@@ -26,9 +26,9 @@ void draw_pixel(int x, int y, uint32_t color) {
 
 void draw_line(int x1, int y1, int x2, int y2, uint32_t color) {
 	// DDA algorithm
-	int step, x, y;
-	int dx = (x2 - x1);
-	int dy = (y2 - y1);
+	int step; 
+	float dx = (x2 - x1), x;
+	float dy = (y2 - y1), y;
 
 	if (abs(dx) >= abs(dy))
 		step = abs(dx);
@@ -41,7 +41,7 @@ void draw_line(int x1, int y1, int x2, int y2, uint32_t color) {
 	y = y1;
 
 	for (int i=1; i<=step; i++) {
-		draw_pixel(x, y, color);
+		draw_pixel((int)x, (int)y, color);
 		x += dx;
 		y += dy;
 	}
@@ -68,6 +68,7 @@ void render_color_buffer(void) {
 void cleanup(void) {
 	/* free resources */
 	SDL_DestroyTexture(player_texture);
+	SDL_DestroyTexture(enemy_texture);
 	free(color_buffer);
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);	
@@ -96,12 +97,21 @@ void draw_stars(void) {
 }
 
 void draw_player(void) {
-
 	/* draw the ship to the screen */
 	SDL_RenderCopy(
 		renderer,
 		player_texture,
 		NULL,
 		&player_r
+	);
+}
+
+void draw_enemy(void) {
+	/* draw the ship to the screen */
+	SDL_RenderCopy(
+		renderer,
+		enemy_texture,
+		NULL,
+		&enemy_r
 	);
 }

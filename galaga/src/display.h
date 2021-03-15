@@ -27,5 +27,7 @@ void cleanup(void);
 void update_stars(void);
 void draw_stars(void);
 void draw_player(void);
+void draw_enemy(void);
+
 
 #endif
