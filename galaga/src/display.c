@@ -24,6 +24,29 @@ void draw_pixel(int x, int y, uint32_t color) {
 	}
 }
 
+void draw_line(int x1, int y1, int x2, int y2, uint32_t color) {
+	// DDA algorithm
+	int step, x, y;
+	int dx = (x2 - x1);
+	int dy = (y2 - y1);
+
+	if (abs(dx) >= abs(dy))
+		step = abs(dx);
+	else
+		step = abs(dy);
+
+	dx /= step;
+	dy /= step;
+	x = x1;
+	y = y1;
+
+	for (int i=1; i<=step; i++) {
+		draw_pixel(x, y, color);
+		x += dx;
+		y += dy;
+	}
+}
+
 void render_color_buffer(void) {
 	/* update the texture to match the color buffer */	
 	SDL_UpdateTexture(
@@ -44,6 +67,7 @@ void render_color_buffer(void) {
 
 void cleanup(void) {
 	/* free resources */
+	SDL_DestroyTexture(player_texture);
 	free(color_buffer);
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);	
@@ -61,8 +85,13 @@ void update_stars(void) {
 }
 
 void draw_stars(void) {
+	uint32_t star_color = 0xFFFFFFFF;
+	 
 	for (int i=0; i < STAR_COUNT; i++) {
-		draw_pixel(stars[i].x, stars[i].y, 0xFFFFFFFF);
+		if ((rand() % 3) >= 1) star_color = 0xFFFF0000 + i;
+		else if ((rand() % 3) >= 2) star_color = 0xFF00FF00 + i;
+		else star_color = 0xFF0000FF + i;
+		draw_pixel(stars[i].x, stars[i].y, star_color);
 	}
 }
 

@@ -1,18 +1,53 @@
 /* galaga clone by caleb barger written with SDL2 03/08/21 */
 
+#define SHIP_SPEED 10
+#define BULLET_SPEED 3
+#define BULLET_LIMBO -31
+
 #include "display.h"
 #include "imgldr.h"
 
-double ship_speed = 7.0;
-
 int is_running = 0;
+int can_fire = 0;
+uint32_t delta = 0;
+uint32_t time_passed = 0;
+
+SDL_Point bullet = { 0, 0 };
+
+void update_bullet(void) {
+	// if the bullet is on the screen than update it
+	if (bullet.y < window_height && bullet.y > 0)
+		bullet.y -= BULLET_SPEED;
+	// otherwise dont...
+	else { 
+		bullet.y = BULLET_LIMBO; //TODO fix this shit 
+		can_fire = 1;
+	}
+		
+}
+
+void draw_bullet(void) {
+	draw_line(
+	bullet.x, 
+	bullet.y,
+	bullet.x,
+	bullet.y-10,
+	0xFFFFFFFF);
+}
+
+void fire(void) {
+	bullet.x = player_r.x+18;
+	bullet.y = player_r.y-5;
+	can_fire = 0;
+}
 
 void render(void) {
 	clear_color_buffer(0xFF000000);
-	draw_stars(); /* draw stars to color buffer */
-	render_color_buffer(); /* display the color buff */
-	draw_player(); /* draw the ship to the screen */
-	SDL_RenderPresent(renderer); /* dispay the color_buffer_texture */
+	draw_stars(); 
+	draw_bullet();
+	render_color_buffer(); 
+	draw_player(); 
+	SDL_RenderPresent(renderer); 
 }
 
 void process_input(void) {
@@ -26,19 +61,32 @@ void process_input(void) {
 		case SDL_KEYDOWN:
 			if (e.key.keysym.sym == SDLK_ESCAPE)
 				is_running = 0;
-			if (e.key.keysym.sym == SDLK_LEFT)
-				player_r.x -= ship_speed; //* time_since_last_frame;
 			if (e.key.keysym.sym == SDLK_RIGHT)
-				player_r.x += ship_speed; //* time_since_last_frame;
-			//if (e.key.keysym.sym == SDLK_SPACE) {
-			//	fire();
-			//}
-			//break;
+				player_r.x += SHIP_SPEED; 
+			if (e.key.keysym.sym == SDLK_LEFT)
+				player_r.x -= SHIP_SPEED;
+			if (e.key.keysym.sym == SDLK_SPACE) {
+				if (can_fire) fire();
+			}
+			break;
+	}
+}
+
+void debug_info(void) {
+	if (time_passed % 500 == 0) {
+		printf("\n====================\n");	
+		printf("Player pos: (%d, %d)\n", player_r.x, player_r.y);
+		printf("Bullet pos: (%d, %d)\n", bullet.x, bullet.y);
 	}
 }
 
 void update(void) {
+	delta = SDL_GetTicks() - time_passed;
+	time_passed = SDL_GetTicks();
 	update_stars();
+	update_bullet();
+//	debug_info();
+
 }
 
 int setup(void) {
