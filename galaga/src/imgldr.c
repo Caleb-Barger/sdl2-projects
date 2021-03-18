@@ -58,7 +58,8 @@ void init_enemy_rect(void) {
 	enemy_r.w = w; 
 	enemy_r.h = h;
 	enemy_r.x = window_width/2;
-	enemy_r.y = 0 + enemy_r.h*1.5;
+	//enemy_r.y = 0 + enemy_r.h*1.5;
+	enemy_r.y = window_height / 2 ;
 }
 
 int init_enemy(void) {

@@ -16,8 +16,7 @@ extern uint32_t* color_buffer;
 extern SDL_Texture* color_buffer_texture;
 extern int window_width;
 extern int window_height;
-
-vec2_t stars[STAR_COUNT]; //TODO !!!!!!!
+extern vec2_t stars[];
 
 void clear_color_buffer(uint32_t color);
 void draw_pixel(int x, int y, uint32_t color);
