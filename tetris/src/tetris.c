@@ -1,17 +1,6 @@
 #include <SDL2/SDL.h>
 #include <math.h>
 
-
-/* 
-	Sin(a) => o/h // y
-		y = sin(a) * h  
-			h => sqrt(x*x + y*y) 
-		
-		y = (y/sqrt(x*x + y*y)) * sqrt(x*x + y*y)
-				
-	Cos(a) => a/h // x
-*/
-
 SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
 uint32_t* color_buffer = NULL;
@@ -69,14 +58,11 @@ void draw_line(int x1, int y1, int x2, int y2, uint32_t color) {
 
 	for (int i=1; i<=step; i++) {
 		draw_pixel((int)x, (int)y, color);
-		//x += dx / sin(dx);
 		x += dx;
-		//y += dy / cos(dy);
-		y += (dy/sqrt(dx*dx + dy*dy)) * sqrt(dx*dx + dy*dy);
+		y += dy;
 	}
 }
-
-int main(void) {
+int setup(void) {
 	SDL_Init(SDL_INIT_EVERYTHING);
 
 	window = SDL_CreateWindow(
@@ -114,20 +100,66 @@ int main(void) {
 		window_width,
 		window_height
 	);
-	int is_running = 1;
-	while(is_running) {
-		clear_color_buffer(0xFFFFFFFF);
-		draw_line(0, window_height, window_width, 0, 0xFF000000);
-		render_color_buffer(); 
-		SDL_RenderPresent(renderer);
-		SDL_Delay(5000);
-		is_running = 0;
-	}
+	
+	return 1;
+}
 
+int proc_input(void) {
+		SDL_Event e;
+		SDL_PollEvent(&e);
+
+		switch(e.type) {
+			case SDL_KEYDOWN:
+				if (e.key.keysym.sym == SDLK_ESCAPE) return 0;
+				break;
+		}
+
+	return 1;
+}
+
+void update(void) {
+}
+
+void render(void) {
+	clear_color_buffer(0x00000000);
+	render_color_buffer(); 
+	SDL_RenderPresent(renderer);
+}
+
+void house_cleaning(void) {
 	free(color_buffer);
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);	
 	SDL_Quit();
+}
+
+int* rot(int w, int h, int* mata) {
+	int* matb = malloc(sizeof(int)*w*h);
+
+	for (int by=0; by<h; by++) { 				
+		for (int ax=by, ay=h-1, bx=0; ay>-1; ay--, bx++) {
+			matb[(by*w)+bx] = mata[(ay*w)+ax];
+		}
+	}
+
+	memcpy(mata, matb, sizeof(int)*w*h);
+	free(matb);
+	
+	return mata;
+}
+
+int main(void) {
+	int is_running = 0;
+	
+	if (setup()) is_running = 1;
+	
+	while(is_running) {
+		if(!proc_input()) is_running = 0;
+		update();
+		render();
+	}
+	
+	house_cleaning();
 
 	return 0;
 }
