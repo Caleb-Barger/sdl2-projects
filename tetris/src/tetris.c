@@ -1,18 +1,25 @@
 #include <SDL2/SDL.h>
 #include <math.h>
+#include "tetrominos.h"
+
+#define WINDOW_WIDTH 400
+#define WINDOW_HEIGHT 720
+#define BOARD_WIDTH 10
+#define BOARD_HEIGHT 18
 
 SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
 uint32_t* color_buffer = NULL;
 SDL_Texture* color_buffer_texture = NULL;
+int* board = NULL;
 
-int window_width = 800;
-int window_height = 600;
+SDL_Texture* oblk_texture = NULL;
+SDL_Rect oblk_rect = {0, 0, 160, 160};
 
 void clear_color_buffer(uint32_t color) {
-	for (int y=0; y<window_height;y++) {
-		for (int x=0; x<window_width;x++) {
-			color_buffer[(window_width*y)+x] = color;
+	for (int y=0; y<WINDOW_HEIGHT;y++) {
+		for (int x=0; x<WINDOW_WIDTH;x++) {
+			color_buffer[(WINDOW_WIDTH*y)+x] = color;
 		}
 	}
 }
@@ -22,7 +29,7 @@ void render_color_buffer(void) {
 		color_buffer_texture,
 		NULL,
 		color_buffer,
-		(int)(window_width * sizeof(uint32_t))
+		(int)(WINDOW_WIDTH * sizeof(uint32_t))
 	);
 
 	SDL_RenderCopy(
@@ -34,9 +41,9 @@ void render_color_buffer(void) {
 }
 
 void draw_pixel(int x, int y, uint32_t color) {
-	if (x > 0 && y > 0 && x <= window_width && 
-		y <= window_height) {
-		color_buffer[(window_width*y)+x] = color;
+	if (x > 0 && y > 0 && x <= WINDOW_WIDTH && 
+		y <= WINDOW_HEIGHT) {
+		color_buffer[(WINDOW_WIDTH*y)+x] = color;
 	}
 }
 
@@ -69,8 +76,8 @@ int setup(void) {
 		NULL,
 		SDL_WINDOWPOS_CENTERED,
 		SDL_WINDOWPOS_CENTERED,
-		window_width,
-		window_height,
+		WINDOW_WIDTH,
+		WINDOW_HEIGHT,
 		SDL_WINDOW_BORDERLESS
 	);
 
@@ -86,7 +93,7 @@ int setup(void) {
 		return 0;
 	}
 	
-	color_buffer = (uint32_t*) malloc(sizeof(uint32_t)*window_width*window_height);
+	color_buffer = (uint32_t*) malloc(sizeof(uint32_t)*WINDOW_WIDTH*WINDOW_HEIGHT);
 
 	if(!color_buffer) {
 		printf("Could not init color buffer\n");
@@ -97,9 +104,27 @@ int setup(void) {
 		renderer,
 		SDL_PIXELFORMAT_ARGB8888,
 		SDL_TEXTUREACCESS_STREAMING,
-		window_width,
-		window_height
+		WINDOW_WIDTH,
+		WINDOW_HEIGHT
 	);
+
+	SDL_Surface* oblk_surface = SDL_LoadBMP("./image/oblk.bmp");
+	if (!oblk_surface) { 
+		printf("%s\n", SDL_GetError());
+		return 0;
+	}
+
+	oblk_texture = SDL_CreateTextureFromSurface(renderer, oblk_surface);
+
+	if (!oblk_texture) { 
+		printf("%s\n", SDL_GetError());
+		return 0;
+	}
+
+	SDL_FreeSurface(oblk_surface);
+
+	board = (int*) malloc(sizeof(int)*BOARD_WIDTH*BOARD_HEIGHT);
+	memset(board, 0, sizeof(int)*BOARD_WIDTH*BOARD_HEIGHT);
 	
 	return 1;
 }
@@ -111,6 +136,10 @@ int proc_input(void) {
 		switch(e.type) {
 			case SDL_KEYDOWN:
 				if (e.key.keysym.sym == SDLK_ESCAPE) return 0;
+				else if(e.key.keysym.sym == SDLK_DOWN) oblk_rect.y += 40;
+				else if(e.key.keysym.sym == SDLK_RIGHT) oblk_rect.x += 40;
+				else if(e.key.keysym.sym == SDLK_UP) oblk_rect.y -= 40;
+				else if(e.key.keysym.sym == SDLK_LEFT) oblk_rect.x -= 40;				
 				break;
 		}
 
@@ -121,12 +150,21 @@ void update(void) {
 }
 
 void render(void) {
-	clear_color_buffer(0x00000000);
+	clear_color_buffer(0xFFFFFFFF);
 	render_color_buffer(); 
+
+	SDL_RenderCopy(
+		renderer,
+		oblk_texture,
+		NULL,
+		&oblk_rect	
+	);
+
 	SDL_RenderPresent(renderer);
 }
 
 void house_cleaning(void) {
+	SDL_DestroyTexture(oblk_texture);
 	free(color_buffer);
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);	
