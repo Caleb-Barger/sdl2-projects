@@ -59,32 +59,35 @@ int* rot(int w, int h, int* mata) {
 	return mata;
 }
 
-int move_blk(int dx, int dy, int* blk) {
-	// if move was successful return a 1
-	// otherwise a 0 is returned
+void get_blk_width(int* width, int* blk, int dx) {
+	int found_edge = 0, this_blk_width = 0;	
+   	int x = dx > 0 ? BLK_WIDTH-1: 0;
+	int y = BLK_HEIGHT-1;
+	int xinc = dx > 0 ? -1 : 1;
 	
-	int found_edge = 0;	
-	int x=BLK_WIDTH-1, y=BLK_HEIGHT-1;
-	int this_blk_width = 0;
-
 	while(!found_edge) {
-		for(int cur_y=y;cur_y>-1;cur_y--) {
-			if (blk[(cur_y*BLK_WIDTH)+x]==1) {
-				this_blk_width = x+1;
-			  	found_edge = 1;
+			for(int cur_y=y;cur_y>-1;cur_y--) {
+				if (blk[(cur_y*BLK_WIDTH)+x]) {
+					this_blk_width = x+1;
+					found_edge = 1;
+				}
 			}
-		}
-	  	x--;
+			x+=xinc;
 	}
+	
+	*width = this_blk_width;
+}	
 
-	if (pos.x+dx > BOARD_WIDTH-this_blk_width) return 0;
+int move_blk(int dx, int dy, int* blk) {
+	int this_blk_width;
+	get_blk_width(&this_blk_width, blk, dx);
+
+	if (pos.x+dx > BOARD_WIDTH-this_blk_width && dx > 0) return 0;
+	else if (pos.x+dx+this_blk_width <= 0 && dx < 0) return 0;
 
 	pos.x += dx;
+	pos.y += dy;
 	return 1;
-}
-
-int can_rotate(int* mata) {
-	return 0;
 }
 
 int main(void) {
@@ -114,17 +117,17 @@ int main(void) {
 
 		switch(c) {
 			case KEY_RIGHT:
-				//pos.x+=1;
 				move_blk(1, 0, lblk);
 				break;
 			case KEY_LEFT:
-				pos.x-=1;
+				move_blk(-1, 0, lblk);
 				break;
 			case KEY_DOWN:
-				pos.y+=1;
+				move_blk(0, 1, lblk);
 				break;
 			case 114:
 				if (BOARD_WIDTH - pos.x >= BLK_WIDTH) 
+//				if (pos.x - BLK_WIDTH >= 0) TODO
 					rot(BLK_WIDTH, BLK_HEIGHT, lblk);
 				break;
 			case 27:
