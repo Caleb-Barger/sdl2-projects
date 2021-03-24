@@ -81,7 +81,7 @@ void set_iddstatus_r_and_pos(struct node_t* n, int multiplier) {
 	n->dat->r.h *= 3;
 	int xmultiplier = multiplier % 2;
 	n->dat->r.x = xmultiplier*n->dat->r.w; 
-	if (!xmultiplier) multiplier--;
+	if (!xmultiplier && multiplier > 0) multiplier--;
 	n->dat->r.y = multiplier*n->dat->r.h;
 }
 
