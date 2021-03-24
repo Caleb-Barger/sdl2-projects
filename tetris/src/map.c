@@ -124,7 +124,7 @@ int move_blk(int dx, int dy, int* blk) {
 	// we only need to check for a collision
 	// if the player or the game forces a block down
 	// when this happens we will see a 1 for dy
-	if (dy) check_collision(&collision, blk, this_blk_height); //TODO DOES NOT COMPILE
+//	if (dy) check_collision(&collision, blk, this_blk_height); //TODO DOES NOT COMPILE
 
 	// we have hit a block or the bottom..
 	if (BOARD_HEIGHT-pos.y-this_blk_height< 0 || collision) {
@@ -167,17 +167,17 @@ int main(void) {
 		int c = getch();
 		switch(c) {
 			case KEY_RIGHT:
-				move_blk(1, 0, lblk);
+				move_blk(1, 0, zblk);
 				break;
 			case KEY_LEFT:
-				move_blk(-1, 0, lblk);
+				move_blk(-1, 0, zblk);
 				break;
 			case KEY_DOWN:
-				move_blk(0, 1, lblk);
+				move_blk(0, 1, zblk);
 				break;
 			case 114: // R KEY
 				if (BOARD_WIDTH-pos.x >= BLK_WIDTH && pos.x >= 0)
-					rot(BLK_WIDTH, BLK_HEIGHT, lblk);
+					rot(BLK_WIDTH, BLK_HEIGHT, zblk);
 				break;
 			case 27: // ESCAPE KEY
 				is_running = 0;
@@ -187,12 +187,12 @@ int main(void) {
 		}
 
 		clear_board();
-		map_onto(lblk);
+		map_onto(zblk);
 		display_board();
 
 		seconds = t/CLOCKS_PER_SEC;
 		if (seconds % interval == 0 && !called && seconds > 0) {
-			move_blk(0, 1, lblk);
+			move_blk(0, 1, zblk);
 			called = 1;
 
 			if (BOARD_HEIGHT-pos.y-BLK_HEIGHT < 0) {

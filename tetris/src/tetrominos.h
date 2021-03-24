@@ -1,45 +1,49 @@
 #define BLK_WIDTH 4
 #define BLK_HEIGHT 4
 
-int zblk[BLK_WIDTH*BLK_HEIGHT] = {
+const int ZBLK[BLK_WIDTH*BLK_HEIGHT] = {
 	0, 0, 0, 0,
 	0, 0, 0, 0,
 	0, 1, 1, 0,
 	0, 0, 1, 1
 };
 
-int sblk[BLK_WIDTH*BLK_HEIGHT] = {
+const int SBLK[BLK_WIDTH*BLK_HEIGHT] = {
 	0, 0, 0, 0,
 	0, 0, 0, 0,
 	0, 1, 1, 0,
 	1, 1, 0, 0
 };
 
-int oblk[BLK_WIDTH*BLK_HEIGHT] = {
+const int OBLK[BLK_WIDTH*BLK_HEIGHT] = {
 	0, 0, 0, 0,
 	0, 0, 0, 0,
 	1, 1, 0, 0,
 	1, 1, 0, 0
 };
-int lblk[BLK_WIDTH*BLK_HEIGHT] = {
+
+const int LBLK[BLK_WIDTH*BLK_HEIGHT] = {
 	1, 0, 0, 0,
 	1, 0, 0, 0,
 	1, 0, 0, 0,
 	1, 1, 0, 0
 };
-int iblk[BLK_WIDTH*BLK_HEIGHT] = {
+
+const int IBLK[BLK_WIDTH*BLK_HEIGHT] = {
 	1, 0, 0, 0,
 	1, 0, 0, 0,
 	1, 0, 0, 0,
 	1, 0, 0, 0
 };
-int jblk[BLK_WIDTH*BLK_HEIGHT] = {
+
+const int JBLK[BLK_WIDTH*BLK_HEIGHT] = {
 	0, 1, 0, 0,
 	0, 1, 0, 0,
 	0, 1, 0, 0,
 	1, 1, 0, 0
 };
-int tblk[BLK_WIDTH*BLK_HEIGHT] = {
+
+const int TBLK[BLK_WIDTH*BLK_HEIGHT] = {
 	0, 0, 0, 0,
 	0, 0, 0, 0,
 	1, 1, 1, 0,
